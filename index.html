@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Study Planner - Interactive Progress Tracker</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0a0a0a;
+    color: #e4e4e7;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    background: #161616;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #262626;
+}
+
+.header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    background: linear-gradient(45deg, #c084fc, #a78bfa);
+    /* -webkit-background-clip: text; */
+    -webkit-text-fill-color: transparent;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    background: #1a1a1a;
+    padding: 15px 25px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid #262626;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #a78bfa;
+}
+
+.level-section {
+    background: #161616;
+    margin: 20px 0;
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid #262626;
+}
+
+.level-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.level-header:hover {
+    background: #1a1a1a;
+}
+
+.level-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #f4f4f5;
+}
+
+.level-progress {
+    font-size: 1.1rem;
+    color: #a78bfa;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    color: #e4e4e7;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.toggle-btn.collapsed {
+    transform: rotate(-90deg);
+}
+
+.day-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.day-card {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #262626;
+}
+
+.day-title {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #a78bfa;
+    font-weight: bold;
+}
+
+.problem-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+}
+
+.problem-item:hover {
+    background: #262626;
+}
+
+.problem-item.completed {
+    background: rgba(167, 139, 250, 0.2);
+    text-decoration: line-through;
+    opacity: 0.8;
+}
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    cursor: pointer;
+    accent-color: #a78bfa;
+}
+
+.problem-number {
+    font-weight: bold;
+    color: #a78bfa;
+    margin-right: 8px;
+    min-width: 40px;
+}
+
+.problem-name {
+    flex: 1;
+    color: #e4e4e7;
+}
+
+.blind-75 {
+    background: #a78bfa;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-left: 8px;
+}
+
+.grind-75 {
+    background: #a78bfa;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-left: 8px;
+}
+
+.level-emoji {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+.collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.collapsed-content {
+    max-height: 0;
+}
+
+.expanded-content {
+    max-height: 2000px;
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .day-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .progress-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 DSA Study Planner</h1>
+            <p>Complete 400+ Problems Across 12 Levels</p>
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCompleted">0</div>
+                    <div>Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalProblems">400</div>
+                    <div>Total Problems</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="progressPercent">0%</div>
+                    <div>Progress</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="levelsContainer"></div>
+    </div>
+
+    <script>
+        // Problem data structure
+        const levels = [
+            {
+                id: 1,
+                emoji: "🟢",
+                title: "Level 1: Basics & Patterns",
+                problemsPerDay: 8,
+                problems: [
+                    "Sum of Array Elements", "Max Element in Array", "Reverse Array", "Odd and Even Sum",
+                    "Mean Median Mode", "Number Distribution", "Print Right Angled Triangle Pattern", "Print Hollow Diamond Pattern",
+                    "Checkerboard Pattern", "Trailing Zeros", "Trailing Zeros Modified", "Binary Representation",
+                    "Power of 2", "Reverse Bits", "Swap Bits", "Flip Bits",
+                    "X 1s and Y 0s", "X and Y Set Bits", "Reverse the Sentence", "Arithmetic Operators",
+                    "Number Reverse", "Digit Cubes", "Narcissistic Numbers", "Natural Numbers Sum",
+                    "Toggle Case", "Odd Even Index", "Reverse String", "Palindromic Pattern",
+                    "Floyd Pattern - 1", "Floyd Pattern - 2", "Triangle Pattern", "Pyramid Pattern",
+                    "Half Diamond", "Half Diamond with Numbers", "Inverted Pyramid", "Rectangle Pattern",
+                    "Hollow Rectangle", "Filled Rectangle", "Area of Rectangle", "Area of Polygon",
+                    "Number of Days", "Leap Year"
+                ]
+            },
+            {
+                id: 2,
+                emoji: "🟡",
+                title: "Level 2: Arrays & Sorting",
+                problemsPerDay: 7,
+                problems: [
+                    "Bubble Sort", "Selection Sort", "Insertion Sort", "Shell Sort",
+                    "Merge Sort", "Sort Colors (Blind 75)", "Find Missing Number", "Find Duplicate Number in Array",
+                    "First and Last", "Unique Elements", "Merge Two Sorted Arrays", "Print Array A Using B",
+                    "Gauntlets", "Max Altitude", "Longest Contiguous 1's", "Is Bitonic Sequence",
+                    "Max Min Partition", "Left Sum and Right Sum", "Alternate Seating", "Ternary Array",
+                    "Three Parts", "List Operations", "Max Subarray Sum (Blind 75)", "Maximum Circular Subarray Sum",
+                    "Sum of Pairs", "Pair with Difference K", "Sum of Subarrays", "Sum of All Subarrays",
+                    "Clockwise Rotation of Array", "Kth Largest Element (Blind 75)", "Product of Array Except Self (Blind 75)", "Contains Duplicate (Blind 75)",
+                    "Merge Intervals (Blind 75)", "Insert Interval (Grind 75)", "Minimum Subtraction", "Number of Multiples"
+                ]
+            },
+            {
+                id: 3,
+                emoji: "🟠",
+                title: "Level 3: Strings & Bit Manipulation",
+                problemsPerDay: 6,
+                problems: [
+                    "Reverse String", "Valid Anagram (Blind 75)", "Check the Square String", "Compress String",
+                    "Strings Rotation", "String Hashing", "Prefix Suffix Equality", "Longest Prefix Suffix",
+                    "Morse Codes", "Long Pressed Keys", "String GCD", "Basic Calculator",
+                    "Letter Coverage", "Digit String", "Digits Sum", "Number of Rectangles",
+                    "Point Location", "Toggle 01", "Vowels and Consonants", "Anagram Basic",
+                    "Check Bit", "Count Set Bits", "XOR of Sum of Pairs", "Product of XOR of Pairs",
+                    "Two Set Bits", "Converting Binary Strings", "Count Equal XOR Pairs", "Number of Anagramic Groups",
+                    "Longest Substring Without Repeating Characters (Blind 75)", "Longest Palindromic Substring", "Longest Substring with Max K Vowels", "String Permutations",
+                    "Rank of String", "KMP / Rabin Karp", "Substring Matching", "Valid Palindrome (Blind 75)",
+                    "Longest Repeating Character Replacement (Blind 75)", "Group Anagrams (Blind 75)", "Decode Ways (Blind 75)"
+                ]
+            },
+            {
+                id: 4,
+                emoji: "🔵",
+                title: "Level 4: 2D Arrays & Matrices",
+                problemsPerDay: 5,
+                problems: [
+                    "Rotation of Matrix", "Diagonal Traversal", "Spiral Traversal", "Spiral Pattern", "Product of 2 Matrices",
+                    "Smart Matrix Path", "Collect Apples", "Largest Submatrix Sum", "Max Square Submatrix (All 1s)", "Max Submatrix with All 1s",
+                    "Matrix Row Sum", "Matrix Column Sum", "Submatrix Sum", "Lower Triangle", "Sum of Two Matrices",
+                    "Interchange Diagonals", "Count the Elements - Matrix in Array", "Matrix Zig-Zag Traversal", "Transpose Matrix", "Sparse Matrix",
+                    "Image Flip", "Local Max in Matrix", "Zero Row and Zero Column", "Set Matrix Zeroes (Blind 75)", "Word Search (Blind 75)",
+                    "Search 2D Matrix (Blind 75)"
+                ]
+            },
+            {
+                id: 5,
+                emoji: "🟣",
+                title: "Level 5: Math & Combinatorics",
+                problemsPerDay: 4,
+                problems: [
+                    "LCM and HCF", "Compute Factorial", "Factorial Hard", "NcR Basic",
+                    "Compute nCr", "Catalan Number", "Express as A^B", "Express as Power Sum",
+                    "Prime Love", "Two Primes", "Check isPrime", "Large Range Primes",
+                    "Prime Coins", "Optimal Prime Game", "Applying Modulus", "Compute A power B",
+                    "Super One", "Minimum Subtraction", "Number of Multiples", "A B and X",
+                    "Arithmetic Progression", "Nth Term of GP"
+                ]
+            },
+            {
+                id: 6,
+                emoji: "🟤",
+                title: "Level 6: Stacks & Queues",
+                problemsPerDay: 3,
+                problems: [
+                    "Implement Stack", "Implement Queue", "Implement Deque",
+                    "Reverse the Sentence", "Balanced Parentheses", "Stock Span",
+                    "LRU Cache", "Valid Parentheses (Blind 75)", "Min Stack (Blind 75)",
+                    "Evaluate Reverse Polish Notation (Blind 75)", "Daily Temperatures (Blind 75)", "Implement Queue using Stacks (Blind 75)",
+                    "Implement Stack using Queues (Blind 75)", "Remove K Digits (Grind 75)"
+                ]
+            },
+            {
+                id: 7,
+                emoji: "🔶",
+                title: "Level 7: Recursion & Backtracking",
+                problemsPerDay: 2,
+                problems: [
+                    "Tower of Hanoi", "Tower of Hanoi Modified",
+                    "N-Queens", "String Partitioning",
+                    "Subsets of an Array", "Interleavings",
+                    "Palindrome Partitioning", "Permutations",
+                    "Express as Power Sum", "Letter Combinations of Phone Number (Blind 75)",
+                    "Generate Parentheses (Blind 75)", "Subsets (Blind 75)",
+                    "Word Break (Blind 75)"
+                ]
+            },
+            {
+                id: 8,
+                emoji: "🔺",
+                title: "Level 8: Greedy + Sliding Window + Hashing",
+                problemsPerDay: 1,
+                problems: [
+                    "Non Divisible Subsets", "Smart Square", "Smaller Elements", "Non-Decreasing Subarrays",
+                    "Count Equal Pairs", "Distinct Elements in Window", "Window Maximum", "Longest Arithmetic Subsequence",
+                    "Best Time to Buy and Sell Stock (Blind 75)", "Longest Subarray with Sum ≤ K (Grind 75)",
+                    "Minimum Window Substring (Blind 75)", "Jump Game (Blind 75)", "Candy (Grind 75)"
+                ]
+            },
+            {
+                id: 9,
+                emoji: "🟩",
+                title: "Level 9: Trees",
+                problemsPerDay: 1,
+                problems: [
+                    "Tree Traversals", "Full Binary Tree", "Height / Depth of Tree", "Level Order / Zig-Zag / Bottom-Up",
+                    "Left / Right / Top View", "Least Common Ancestor", "Check BST", "Trim BST",
+                    "Max Path Sum", "Diameter of Tree", "Vertical / Diagonal Order", "Nodes at Distance K",
+                    "BST Operations", "Binary Tree Inorder Traversal (Blind 75)", "Binary Tree Level Order Traversal (Blind 75)",
+                    "Validate Binary Search Tree (Blind 75)", "Serialize and Deserialize Binary Tree (Blind 75)",
+                    "Subtree of Another Tree (Blind 75)", "Lowest Common Ancestor of BST (Blind 75)",
+                    "Construct Binary Tree from Preorder/Inorder (Blind 75)"
+                ]
+            },
+            {
+                id: 10,
+                emoji: "🟥",
+                title: "Level 10: Graphs",
+                problemsPerDay: 1,
+                problems: [
+                    "Path in a Graph", "Detect Cycle (Directed/Undirected)", "Number of Islands (Blind 75)",
+                    "Shortest Path (Weighted/Unweighted)", "Topological Sort", "Minimum Spanning Tree",
+                    "Knight on Chessboard", "Bipartite Graph", "Number of Connected Components",
+                    "Rotting Oranges", "Clone Graph (Blind 75)", "Course Schedule (Blind 75)",
+                    "Pacific Atlantic Water Flow (Blind 75)", "Word Ladder (Blind 75)"
+                ]
+            },
+            {
+                id: 11,
+                emoji: "🟦",
+                title: "Level 11: DP (Dynamic Programming)",
+                problemsPerDay: 1,
+                problems: [
+                    "Subset Sum", "Count Subset Sums = K", "Longest Increasing Subsequence (Blind 75)",
+                    "Bitonic Sequence", "Edit Distance", "Longest Common Subsequence",
+                    "Longest Palindromic Subsequence", "Matrix Chain Multiplication", "Boolean Parenthesization",
+                    "Maximum Non-adjacent Subsequence Sum", "Maximum Alternate Nodes Sum", "House Robber (Blind 75)",
+                    "Coin Change (Blind 75)", "Longest Palindromic Substring (Blind 75)", "Decode Ways (Blind 75)",
+                    "Unique Paths (Blind 75)", "Climbing Stairs (Blind 75)"
+                ]
+            },
+            {
+                id: 12,
+                emoji: "🟥",
+                title: "Level 12: Advanced / Hardcore Logic",
+                problemsPerDay: 1,
+                problems: [
+                    "Next Palindrome", "Arranging Bricks", "Optimal Sort", "Mixed Prime Game",
+                    "Shifting Stones", "Palindrome Queries", "Smart Problem Solving", "Two Array Sums",
+                    "Game of Stones", "Library Books", "Painting Buildings", "Tower of Shattered Eggs",
+                    "Maximum XOR", "Max Pair Sums from 2 Arrays", "Median of Two Sorted Arrays (Blind 75)",
+                    "Trapping Rain Water (Blind 75)", "Regular Expression Matching (Blind 75)",
+                    "Hardest Question of the Grind (Grind 75)"
+                ]
+            }
+        ];
+
+        // Progress storage (using in-memory storage since localStorage isn't supported)
+        let progressData = {};
+        let totalProblems = 0;
+        let problemCounter = 1;
+
+        // Calculate total problems
+        levels.forEach(level => {
+            totalProblems += level.problems.length;
+        });
+
+        // Initialize progress
+        function initializeProgress() {
+            levels.forEach(level => {
+                level.problems.forEach((problem, index) => {
+                    const problemId = `${level.id}-${index}`;
+                    if (!(problemId in progressData)) {
+                        progressData[problemId] = false;
+                    }
+                });
+            });
+        }
+
+        // Update progress statistics
+        function updateProgressStats() {
+            const completed = Object.values(progressData).filter(Boolean).length;
+            const percentage = Math.round((completed / totalProblems) * 100);
+            
+            document.getElementById('totalCompleted').textContent = completed;
+            document.getElementById('totalProblems').textContent = totalProblems;
+            document.getElementById('progressPercent').textContent = `${percentage}%`;
+        }
+
+        // Toggle problem completion
+        function toggleProblem(levelId, problemIndex) {
+            const problemId = `${levelId}-${problemIndex}`;
+            progressData[problemId] = !progressData[problemId];
+            updateProgressStats();
+            updateLevelProgress(levelId);
+            
+            // Update UI
+            const checkbox = document.getElementById(`checkbox-${problemId}`);
+            const problemItem = document.getElementById(`problem-${problemId}`);
+            
+            if (progressData[problemId]) {
+                checkbox.checked = true;
+                problemItem.classList.add('completed');
+            } else {
+                checkbox.checked = false;
+                problemItem.classList.remove('completed');
+            }
+        }
+
+        // Update level progress
+        function updateLevelProgress(levelId) {
+            const level = levels.find(l => l.id === levelId);
+            let completed = 0;
+            
+            level.problems.forEach((problem, index) => {
+                const problemId = `${levelId}-${index}`;
+                if (progressData[problemId]) completed++;
+            });
+            
+            const progressElement = document.getElementById(`level-progress-${levelId}`);
+            progressElement.textContent = `${completed}/${level.problems.length} completed`;
+        }
+
+        // Toggle level visibility
+        function toggleLevel(levelId) {
+            const content = document.getElementById(`level-content-${levelId}`);
+            const button = document.getElementById(`toggle-btn-${levelId}`);
+            
+            if (content.classList.contains('collapsed-content')) {
+                content.classList.remove('collapsed-content');
+                content.classList.add('expanded-content');
+                button.classList.remove('collapsed');
+            } else {
+                content.classList.add('collapsed-content');
+                content.classList.remove('expanded-content');
+                button.classList.add('collapsed');
+            }
+        }
+
+        // Create problem badge
+        function createProblemBadge(problemName) {
+            if (problemName.includes('(Blind 75)')) {
+                return '<span class="blind-75">Blind 75</span>';
+            } else if (problemName.includes('(Grind 75)')) {
+                return '<span class="grind-75">Grind 75</span>';
+            }
+            return '';
+        }
+
+        // Render levels
+        function renderLevels() {
+            const container = document.getElementById('levelsContainer');
+            let currentProblemNumber = 1;
+            
+            levels.forEach(level => {
+                const levelProblems = level.problems;
+                const daysNeeded = Math.ceil(levelProblems.length / level.problemsPerDay);
+                
+                let levelHTML = `
+                    <div class="level-section">
+                        <div class="level-header" onclick="toggleLevel(${level.id})">
+                            <div>
+                                <span class="level-emoji">${level.emoji}</span>
+                                <span class="level-title">${level.title}</span>
+                                <span style="color: #ccc; margin-left: 10px;">(${level.problemsPerDay} problems/day)</span>
+                            </div>
+                            <div>
+                                <span class="level-progress" id="level-progress-${level.id}">0/${levelProblems.length} completed</span>
+                                <button class="toggle-btn" id="toggle-btn-${level.id}">▼</button>
+                            </div>
+                        </div>
+                        <div class="collapsible-content expanded-content" id="level-content-${level.id}">
+                            <div class="day-container">
+                `;
+                
+                // Create days
+                for (let day = 0; day < daysNeeded; day++) {
+                    const startIdx = day * level.problemsPerDay;
+                    const endIdx = Math.min(startIdx + level.problemsPerDay, levelProblems.length);
+                    const dayProblems = levelProblems.slice(startIdx, endIdx);
+                    
+                    levelHTML += `
+                        <div class="day-card">
+                            <div class="day-title">Day ${day + 1}</div>
+                    `;
+                    
+                    dayProblems.forEach((problem, idx) => {
+                        const problemIndex = startIdx + idx;
+                        const problemId = `${level.id}-${problemIndex}`;
+                        const cleanProblemName = problem.replace(/\s*\((Blind|Grind) 75\)/, '');
+                        const badge = createProblemBadge(problem);
+                        
+                        levelHTML += `
+                            <div class="problem-item" id="problem-${problemId}">
+                                <input type="checkbox" class="checkbox" id="checkbox-${problemId}" 
+                                       onchange="toggleProblem(${level.id}, ${problemIndex})">
+                                <span class="problem-number">#${currentProblemNumber}</span>
+                                <span class="problem-name">${cleanProblemName}</span>
+                                ${badge}
+                            </div>
+                        `;
+                        currentProblemNumber++;
+                    });
+                    
+                    levelHTML += `</div>`;
+                }
+                
+                levelHTML += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML += levelHTML;
+            });
+        }
+
+        // Initialize everything
+        function init() {
+            initializeProgress();
+            renderLevels();
+            updateProgressStats();
+            
+            // Update all level progress indicators
+            levels.forEach(level => {
+                updateLevelProgress(level.id);
+            });
+        }
+
+        // Start the application
+        init();
+    </script>
+</body>
+</html>
