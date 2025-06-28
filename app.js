@@ -216,7 +216,6 @@ const levels = [
       "Reverse the Sentence",
       "Balanced Parentheses",
       "Stock Span",
-      "LRU Cache",
       "Valid Parentheses (Blind 75)",
       "Min Stack (Blind 75)",
       "Evaluate Reverse Polish Notation (Blind 75)",
@@ -228,8 +227,33 @@ const levels = [
   },
   {
     id: 7,
+    emoji: "🟢",
+    title: "Level 7: Linked Lists",
+    problemsPerDay: 3,
+    problems: [
+      "Reverse Linked List",
+      "Merge Two Sorted Lists",
+      "Find Middle of Linked List",
+      "Cycle Detection in Linked List",
+      "Remove Nth Node From End",
+      "Add Two Numbers as Linked Lists",
+      "Intersection of Two Linked Lists",
+      "Odd Even Linked List",
+      "Merge K Sorted Lists",
+      "Copy List with Random Pointer",
+      "Reverse Nodes in K-Group",
+      "LRU Cache",
+      "Rotate Linked List",
+      "Partition Linked List",
+      "Reorder Linked List",
+      "Flatten Multilevel Doubly Linked List",
+      "Split Linked List to Parts"
+    ],
+  },
+  {
+    id: 8,
     emoji: "🔶",
-    title: "Level 7: Recursion & Backtracking",
+    title: "Level 8: Recursion & Backtracking",
     problemsPerDay: 2,
     problems: [
       "Tower of Hanoi",
@@ -248,10 +272,10 @@ const levels = [
     ],
   },
   {
-    id: 8,
+    id: 9,
     emoji: "🔺",
-    title: "Level 8: Greedy + Sliding Window + Hashing",
-    problemsPerDay: 1,
+    title: "Level 9: Greedy + Sliding Window + Hashing",
+    problemsPerDay: 2,
     problems: [
       "Non Divisible Subsets",
       "Smart Square",
@@ -269,9 +293,9 @@ const levels = [
     ],
   },
   {
-    id: 9,
+    id: 10,
     emoji: "🟩",
-    title: "Level 9: Trees",
+    title: "Level 10: Trees",
     problemsPerDay: 1,
     problems: [
       "Tree Traversals",
@@ -297,9 +321,9 @@ const levels = [
     ],
   },
   {
-    id: 10,
+    id: 11,
     emoji: "🟥",
-    title: "Level 10: Graphs",
+    title: "Level 11: Graphs",
     problemsPerDay: 1,
     problems: [
       "Path in a Graph",
@@ -319,9 +343,9 @@ const levels = [
     ],
   },
   {
-    id: 11,
+    id: 12,
     emoji: "🟦",
-    title: "Level 11: DP (Dynamic Programming)",
+    title: "Level 12: DP (Dynamic Programming)",
     problemsPerDay: 1,
     problems: [
       "Subset Sum",
@@ -344,9 +368,9 @@ const levels = [
     ],
   },
   {
-    id: 12,
+    id: 13,
     emoji: "🟥",
-    title: "Level 12: Advanced / Hardcore Logic",
+    title: "Level 13: Advanced / Hardcore Logic",
     problemsPerDay: 1,
     problems: [
       "Next Palindrome",
@@ -370,6 +394,7 @@ const levels = [
     ],
   },
 ];
+
 
 
 let progressData = {};
