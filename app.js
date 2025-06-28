@@ -227,7 +227,7 @@ const levels = [
   },
   {
     id: 7,
-    emoji: "🟢",
+    emoji: "🔶",
     title: "Level 7: Linked Lists",
     problemsPerDay: 3,
     problems: [
@@ -252,7 +252,7 @@ const levels = [
   },
   {
     id: 8,
-    emoji: "🔶",
+    emoji: "♦️",
     title: "Level 8: Recursion & Backtracking",
     problemsPerDay: 2,
     problems: [
