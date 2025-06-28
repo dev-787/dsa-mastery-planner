@@ -1,4 +1,3 @@
-// Problem data structure
 const levels = [
   {
     id: 1,
@@ -372,18 +371,26 @@ const levels = [
   },
 ];
 
-// Progress storage (using in-memory storage since localStorage isn't supported)
+
 let progressData = {};
 let totalProblems = 0;
-let problemCounter = 1;
 
-// Calculate total problems
+
 levels.forEach((level) => {
   totalProblems += level.problems.length;
 });
 
-// Initialize progress
+function saveProgress() {
+  localStorage.setItem("progressData", JSON.stringify(progressData));
+}
+
 function initializeProgress() {
+  const stored = localStorage.getItem("progressData");
+  if (stored) {
+    progressData = JSON.parse(stored);
+  } 
+
+
   levels.forEach((level) => {
     level.problems.forEach((problem, index) => {
       const problemId = `${level.id}-${index}`;
@@ -392,9 +399,11 @@ function initializeProgress() {
       }
     });
   });
+
+  saveProgress();
 }
 
-// Update progress statistics
+
 function updateProgressStats() {
   const completed = Object.values(progressData).filter(Boolean).length;
   const percentage = Math.round((completed / totalProblems) * 100);
@@ -404,14 +413,15 @@ function updateProgressStats() {
   document.getElementById("progressPercent").textContent = `${percentage}%`;
 }
 
-// Toggle problem completion
+
 function toggleProblem(levelId, problemIndex) {
   const problemId = `${levelId}-${problemIndex}`;
   progressData[problemId] = !progressData[problemId];
+  saveProgress();
+
   updateProgressStats();
   updateLevelProgress(levelId);
 
-  // Update UI
   const checkbox = document.getElementById(`checkbox-${problemId}`);
   const problemItem = document.getElementById(`problem-${problemId}`);
 
@@ -424,7 +434,7 @@ function toggleProblem(levelId, problemIndex) {
   }
 }
 
-// Update level progress
+
 function updateLevelProgress(levelId) {
   const level = levels.find((l) => l.id === levelId);
   let completed = 0;
@@ -438,7 +448,7 @@ function updateLevelProgress(levelId) {
   progressElement.textContent = `${completed}/${level.problems.length} completed`;
 }
 
-// Toggle level visibility
+
 function toggleLevel(levelId) {
   const content = document.getElementById(`level-content-${levelId}`);
   const button = document.getElementById(`toggle-btn-${levelId}`);
@@ -454,7 +464,6 @@ function toggleLevel(levelId) {
   }
 }
 
-// Create problem badge
 function createProblemBadge(problemName) {
   if (problemName.includes("(Blind 75)")) {
     return '<span class="blind-75">Blind 75</span>';
@@ -464,7 +473,7 @@ function createProblemBadge(problemName) {
   return "";
 }
 
-// Render levels
+
 function renderLevels() {
   const container = document.getElementById("levelsContainer");
   let currentProblemNumber = 1;
@@ -474,51 +483,49 @@ function renderLevels() {
     const daysNeeded = Math.ceil(levelProblems.length / level.problemsPerDay);
 
     let levelHTML = `
-                    <div class="level-section">
-                        <div class="level-header" onclick="toggleLevel(${level.id})">
-                            <div>
-                                <span class="level-emoji">${level.emoji}</span>
-                                <span class="level-title">${level.title}</span>
-                                <span style="color: #ccc; margin-left: 10px;">(${level.problemsPerDay} problems/day)</span>
-                            </div>
-                            <div>
-                                <span class="level-progress" id="level-progress-${level.id}">0/${levelProblems.length} completed</span>
-                                <button class="toggle-btn" id="toggle-btn-${level.id}">▼</button>
-                            </div>
-                        </div>
-                        <div class="collapsible-content expanded-content" id="level-content-${level.id}">
-                            <div class="day-container">
-                `;
+      <div class="level-section">
+        <div class="level-header" onclick="toggleLevel(${level.id})">
+          <div>
+            <span class="level-emoji">${level.emoji}</span>
+            <span class="level-title">${level.title}</span>
+            <span style="color: #ccc; margin-left: 10px;">(${level.problemsPerDay} problems/day)</span>
+          </div>
+          <div>
+            <span class="level-progress" id="level-progress-${level.id}">0/${levelProblems.length} completed</span>
+            <button class="toggle-btn" id="toggle-btn-${level.id}">▼</button>
+          </div>
+        </div>
+        <div class="collapsible-content expanded-content" id="level-content-${level.id}">
+          <div class="day-container">
+    `;
 
-    // Create days
+ 
     for (let day = 0; day < daysNeeded; day++) {
       const startIdx = day * level.problemsPerDay;
-      const endIdx = Math.min(
-        startIdx + level.problemsPerDay,
-        levelProblems.length
-      );
+      const endIdx = Math.min(startIdx + level.problemsPerDay, levelProblems.length);
       const dayProblems = levelProblems.slice(startIdx, endIdx);
 
       levelHTML += `
-                        <div class="day-card">
-                            <div class="day-title">Day ${day + 1}</div>
-                    `;
+        <div class="day-card">
+          <div class="day-title">Day ${day + 1}</div>
+      `;
 
       dayProblems.forEach((problem, idx) => {
         const problemIndex = startIdx + idx;
         const problemId = `${level.id}-${problemIndex}`;
         const cleanProblemName = problem.replace(/\s*\((Blind|Grind) 75\)/, "");
         const badge = createProblemBadge(problem);
+        const isChecked = progressData[problemId] ? "checked" : "";
 
         levelHTML += `
-                            <div class="problem-item" id="problem-${problemId}">
-                                <input type="checkbox" class="checkbox" id="checkbox-${problemId}" 
-                                       onchange="toggleProblem(${level.id}, ${problemIndex})">
-                                <span class="problem-number">#${currentProblemNumber}</span>
-                                <span class="problem-name">${cleanProblemName}</span>
-                                ${badge}
-                            </div>
-                        `;
+          <div class="problem-item ${progressData[problemId] ? 'completed' : ''}" id="problem-${problemId}">
+            <input type="checkbox" class="checkbox" id="checkbox-${problemId}" ${isChecked} 
+              onchange="toggleProblem(${level.id}, ${problemIndex})">
+            <span class="problem-number">#${currentProblemNumber}</span>
+            <span class="problem-name">${cleanProblemName}</span>
+            ${badge}
+          </div>
+        `;
         currentProblemNumber++;
       });
 
@@ -526,26 +533,25 @@ function renderLevels() {
     }
 
     levelHTML += `
-                            </div>
-                        </div>
-                    </div>
-                `;
+          </div>
+        </div>
+      </div>
+    `;
 
     container.innerHTML += levelHTML;
   });
 }
 
-// Initialize everything
+
 function init() {
   initializeProgress();
   renderLevels();
   updateProgressStats();
 
-  // Update all level progress indicators
   levels.forEach((level) => {
     updateLevelProgress(level.id);
   });
 }
 
-// Start the application
+
 init();
